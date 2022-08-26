@@ -7,3 +7,37 @@ def get_teacher(id, client)
     puts "Teacher #{results[0]['first_name']} #{results[0]['middle_name']} #{results[0]['last_name']} was born on #{(results[0]['birth_date']).strftime("%d %b %Y (%A)")}"
   end
 end
+
+def get_subject_teachers(id, client)
+  f = "select  first_name, middle_name, last_name, subject.name as subject
+  from teachers_gabriel teacher join subjects_gabriel subject on teacher.subject_id = subject.ID where subject.ID = #{id}";
+  results = client.query(f).to_a
+  if results.count.zero?
+    puts "Not found any that teaches this subject."
+  else
+    puts "Subject: #{results[0]['subject']}\nTeachers:"
+    results.each do |row|
+    puts "#{row['first_name']} #{row['middle_name']} #{row['last_name']}"
+  end
+end
+end
+
+def get_class_subjects(class_name, client)
+  f = "select subject.name as subject_name, first_name, substring(middle_name,1,1) as middle_name_initial, last_name
+    from teachers_classes_gabriel tc
+    join teachers_gabriel teacher on teacher.ID = tc.ID
+    join subjects_gabriel subject on subject.ID = teacher.subject_id
+    join classes_gabriel class on class.ID = tc.class_ID
+    where class.name = #{class_name}"
+
+  results = client.query(f).to_a
+  if results.count.zero?
+    puts "There are no teachers in class #{class_name}"
+  else
+    puts "Class: #{class_name}\nSubjects:\n"
+    results.each do |row|
+      puts "#{row['subject_name']}: #{row['first_name']}. #{row['middle_name_initial']}. #{row['last_name']}"
+    end
+  end
+
+end
