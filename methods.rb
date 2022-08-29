@@ -63,7 +63,24 @@ def get_teachers_list_by_letter(letter, client)
     puts "No teacher with the letter #{letter} in the first or last name"
   else
     results.each do |row|
-      puts "#{row['first_name_initial']}. #{row['middle_name_initial']}. #{row['last_name']} (#{row['subject']})"
+      puts "#{row['first_name_initial']}. #{row['middle_name_initial']}. #{row['last_name']} (#{row['subject'] })"
     end
+  end
+end
+
+def set_md5(md5, client)
+  f = "select concat(
+  first_name,
+  middle_name,
+  last_name,
+  birth_date,
+  subject_id) as teacher
+  from teachers_gabriel"
+
+  results = client.query(f).to_a
+
+  id = 0
+  results.each do |row|
+    client.query("update teachers_gabriel set md5 = '#{md5  .hexdigest(row.to_s)}' where id = #{id += 1}")
   end
 end
