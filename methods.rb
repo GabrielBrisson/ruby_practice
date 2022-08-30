@@ -90,7 +90,7 @@ def random_date(date_begin, date_end)
 end
 
 def random_last_names(times, client)
-  f = "select * from last_names
+  f = "select last_name from last_names
   order by rand()
   limit #{times}"
 
