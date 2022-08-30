@@ -81,6 +81,45 @@ def set_md5(md5, client)
 
   id = 0
   results.each do |row|
-    client.query("update teachers_gabriel set md5 = '#{md5  .hexdigest(row.to_s)}' where id = #{id += 1}")
+    client.query("update teachers_gabriel set md5 = '#{md5.hexdigest(row.to_s)}' where id = #{id += 1}")
   end
 end
+
+def random_date(date_begin, date_end)
+  puts rand(date_begin..date_end)
+end
+
+def random_last_names(times, client)
+  f = "select * from last_names
+  order by rand()
+  limit #{times}"
+
+  results = client.query(f).to_a
+
+  output = ""
+  if results.count.zero?
+    output = "There are no last name to be selected!"
+  else
+    output = results.map { |row| row['last_name']  }
+  end
+  p output
+end
+
+def random_first_names(times, client)
+  f = "select FirstNames from male_names
+  union
+  select names from female_names
+  order by rand()
+  limit #{times}"
+
+  results = client.query(f).to_a
+
+  output = ""
+  if results.count.zero?
+    output = "There are no first name to be selected!"
+  else
+    output = results.map { |row| row['FirstName']  }
+  end
+  p output
+end
+
