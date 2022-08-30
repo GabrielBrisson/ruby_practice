@@ -100,7 +100,7 @@ def random_last_names(times, client)
   if results.count.zero?
     output = "There are no last name to be selected!"
   else
-    output = results.map { |row| row['last_name']  }
+    output = results.map { |row| row['last_name'] }
   end
   p output
 end
@@ -118,8 +118,19 @@ def random_first_names(times, client)
   if results.count.zero?
     output = "There are no first name to be selected!"
   else
-    output = results.map { |row| row['FirstName']  }
+    output = results.map { |row| row['FirstName'] }
   end
   p output
 end
 
+def generate_people(number, client)
+  number.times do
+
+    random_birth_date = random_date(1910, 2022)
+    random_first_names = random_first_names(number, client)[0]
+    random_last_names = random_last_names(number, client)[0]
+
+    client.query("insert into random_people_gabriel(first_name, last_name, birth_date)
+                values('#{random_first_names}', '#{random_last_names}', '#{random_birth_date}' )")
+  end
+end

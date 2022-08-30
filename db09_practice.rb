@@ -10,17 +10,5 @@ client = Mysql2::Client.new(host: "db09.blockshopper.com", username:ENV['DB09_LG
 md5 = Digest::MD5.new
 
 
-#get_teacher(1,client)
-
-#get_subject_teachers(7,client)
-
-#get_class_subjects(3001,client)
-
-#get_teachers_list_by_letter("g",client)
-
-#set_md5(md5, client)
-
-#random_last_names(20, client)
-
 
 client.close
