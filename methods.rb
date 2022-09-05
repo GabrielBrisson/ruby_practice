@@ -86,51 +86,43 @@ def set_md5(md5, client)
 end
 
 def random_date(date_begin, date_end)
-  puts rand(date_begin..date_end)
+  rand(date_begin..date_end)
 end
 
 def random_last_names(times, client)
-  f = "select last_name from last_names
-  order by rand()
-  limit #{times}"
-
-  results = client.query(f).to_a
-
-  output = ""
-  if results.count.zero?
-    output = "There are no last name to be selected!"
-  else
-    output = results.map { |row| row['last_name'] }
-  end
-  p output
+  f = "select last_name from last_names;"
+  @last_names = @last_names ? @last_names : client.query(f).to_a.map { |ln| ln['last_name'] }
+  @last_names.sample(times)
 end
 
 def random_first_names(times, client)
-  f = "select FirstNames from male_names
-  union
-  select names from female_names
-  order by rand()
-  limit #{times}"
+  f = "select FirstName from male_names union select names from female_names"
 
-  results = client.query(f).to_a
+  @first_name = @first_name ? @first_name : (client.query(f).to_a).map { |fn| fn['FirstName'] }
 
-  output = ""
-  if results.count.zero?
-    output = "There are no first name to be selected!"
-  else
-    output = results.map { |row| row['FirstName'] }
+  result = []
+  times.times do
+    result << @first_name.sample
   end
-  p output
+  result
 end
 
 def generate_people(number, client)
+  birth_dates = []
   number.times do
-
-    random_birth_date = random_date(1910, 2022)
-    random_first_names = random_first_names(number, client)[0]
-    random_last_names = random_last_names(number, client)[0]
-
-    client.query("insert into random_people_gabriel(first_name, last_name, birth_date)
-                values('#{random_first_names}', '#{random_last_names}', '#{random_birth_date}' )")
+    birth_dates << random_date(Date.parse("1910-01-01"), Date.parse("2022-01-01")).to_s
   end
+  random_first_names = random_first_names(number, client)
+  random_last_names = random_last_names(number, client)
+
+  people = []
+  random_first_names.each_with_index do |rfn, i|
+    people << { "first_name"=>rfn, "last_name"=>random_last_names[i], "birth_date"=>birth_dates[i]}
+  end
+
+  people.each do |p|
+    client.query("insert into random_people_gabriel(first_name, last_name, birth_date)
+                values('#{p['first_name']}', '#{p['last_name']}', '#{p['birth_date']}')")
+end
+  puts "#{number} people created!"
 end

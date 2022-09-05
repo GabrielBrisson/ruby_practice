@@ -9,6 +9,9 @@ client = Mysql2::Client.new(host: "db09.blockshopper.com", username:ENV['DB09_LG
 
 md5 = Digest::MD5.new
 
+timer = Time.now
 
+generate_people(10000,client)
+puts Time.now - timer
 
 client.close
